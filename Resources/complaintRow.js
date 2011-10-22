@@ -10,9 +10,9 @@ var createComplaintRow = function(data) {
 		value: data.fieldValue,
 		textAlign: 'right',
 		top: 0,
-  		right: 10,
-  		enabled: false
+  		right: 10
 	});
+	fieldValue.addEventListener('change', data.changeHandler);
 	var row = Ti.UI.createTableViewRow({
 		
 		height: 55

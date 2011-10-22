@@ -7,6 +7,17 @@ Titanium.UI.setBackgroundColor('#000');
 Ti.Geolocation.purpose = 'To Report Water Problems'
 Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
 
+var userName = '';
+var mobileNumber = '';
+var location = '';
+
+if (Titanium.Platform.name != 'android')
+{
+    userName = Titanium.App.Properties.getString('name_preference');
+    mobileNumber = Titanium.App.Properties.getString('mobile_preference');
+    Ti.API.debug('UN' + userName + ' ' + mobileNumber);
+}
+
 getLocation();
 var tabGroup = Titanium.UI.createTabGroup();
 

@@ -44,8 +44,9 @@ var raiseComplaint = function(e) {
 			reportDumping();
 			break;
 	}
-	while(geoLocationResult.status == undefined || geoLocationResult.status == null);
-	while(geoLocationResult.astatus == undefined || geoLocationResult.astatus == null);
+	//while(geoLocationResult.status == undefined || geoLocationResult.status == null);
+	//while(geoLocationResult.astatus == undefined || geoLocationResult.astatus == null);
+	
 	Ti.API.debug("Res" + geoLocationResult.street + " " + geoLocationResult.status);
 	reviewComplaintData();
 };
@@ -73,7 +74,9 @@ var failCallback = function(e) {
 var submitReport = function(e) {
 	Ti.API.debug('submitting');
 	var xhr = Ti.Network.createHTTPClient();
-	xhr.open("GET","http://192.168.124.16:3000/complaint/create.json?mobile=32532432&location=sdfsdf&type=sfdsf");
+	var url = 'http://192.168.124.16:3000/complaint/create.json?mobile='+mobileNumber+'&location='+location+'&type='+complaintNature;
+	Ti.API.info('URL: ' + url);
+	xhr.open("GET",url);
 	xhr.setRequestHeader('Content-type','application/json');
 	xhr.setRequestHeader('Accept','application/json');
 	var timeout = setInterval(function() {
@@ -135,6 +138,18 @@ var takePhoto = function(e) {
 		});
 	}
 };
+var mobileChanged = function(e) {
+	mobileNumber = e.source.value;
+	Ti.API.info('m' + mobileNumber);
+};
+var nameChanged = function(e) {
+	userName = e.source.value;
+	Ti.API.info('n' + userName);
+};
+var locationChanged = function(e) {
+	location = e.source.value;
+	Ti.API.info(location + 'l');
+};
 var reviewComplaintData = function() {
 	var sendReportButton = Titanium.UI.createButton({
     	title: 'Submit',
@@ -149,17 +164,20 @@ var reviewComplaintData = function() {
 	tab1.open(reviewWindow)
 	
 	var data = [];
-	data[0] = createComplaintRow({fieldName: "Mobile Number", fieldValue: "+919663368421"});
-	data[1] = createComplaintRow({fieldName: "Name", fieldValue: "Senthil"});
+	data[0] = createComplaintRow({fieldName: "Mobile Number", fieldValue: mobileNumber, changeHandler: mobileChanged});
+	data[1] = createComplaintRow({fieldName: "Name", fieldValue: userName, changeHandler: nameChanged});
 	var address = geoLocationResult.street + ',' + geoLocationResult.city + ',' + geoLocationResult.country;
-	data[2] = createComplaintRow({fieldName: "Location", fieldValue: address});
+	location = address;
+	data[2] = createComplaintRow({fieldName: "Location", fieldValue: address, changeHandler: locationChanged});
 	reviewDataTable = Titanium.UI.createTableView({
 		backgroundColor: 'white',
 		touchEnabled: true
 	});
 	for (var i=0; i < data.length; i++) {
 		Ti.API.debug('Appending');
+		if(i == data.length-1) data[i].enabled = false;
 	  reviewDataTable.appendRow(data[i]);
+	  
 	};
 	
 	var addPhotoRow = Ti.UI.createTableViewRow({
