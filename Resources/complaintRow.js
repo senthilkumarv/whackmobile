@@ -15,7 +15,7 @@ var createComplaintRow = function(data) {
 	});
 	var row = Ti.UI.createTableViewRow({
 		
-		height: 55,
+		height: 55
 	});
 	row.add(fieldName);
 	row.add(fieldValue);
