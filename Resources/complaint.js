@@ -74,7 +74,7 @@ var failCallback = function(e) {
 var submitReport = function(e) {
 	Ti.API.debug('submitting');
 	var xhr = Ti.Network.createHTTPClient();
-	var url = 'http://192.168.124.16:3000/complaint/create.json?mobile='+mobileNumber+'&location='+location+'&type='+complaintNature;
+	var url = 'http://' + MACHINE_ADDRESS + '/complaint/create.json?mobile='+mobileNumber+'&location='+location+'&type='+complaintNature;
 	Ti.API.info('URL: ' + url);
 	xhr.open("GET",url);
 	xhr.setRequestHeader('Content-type','application/json');

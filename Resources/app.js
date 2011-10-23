@@ -6,7 +6,7 @@ Ti.include('geolocation.js')
 Titanium.UI.setBackgroundColor('#000');
 Ti.Geolocation.purpose = 'To Report Water Problems'
 Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
-
+var MACHINE_ADDRESS = '172.16.3.33:3000';
 var userName = '';
 var mobileNumber = '';
 var location = '';
