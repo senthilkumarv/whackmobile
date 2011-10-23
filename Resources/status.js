@@ -35,6 +35,8 @@ var trackRequestButton = Titanium.UI.createButton({
 
 var statusSuccessCallback = function(e) {
 	var response = eval('('+ e.source.responseText +')');
+	Ti.API.info(e.source.responseText);
+	hideActivity({parent: win2});
 	if(response.response == 200) {
 		alert('Your Complaint Status is ' + response.status);
 		return;
@@ -46,9 +48,11 @@ var trackRequestStatus = function() {
 		alert('Enter a Valid Reference ID');
 		return;
 	}
-	var url = 'http://' + MACHINE_ADDRESS + '/complaint/status.json?id=' + referenceId;
+	tableViewTrackValue.blur();
+	showActivity({parent: win2, message: 'Requesting Status...'});
+	var url = 'http://' + MACHINE_ADDRESS + '/complaint/status.json?reference_id=' + referenceId;
 	var xhr = Ti.Network.createHTTPClient();
-	xhr.open("GET",url);
+	xhr.open("GET",url, false);
 	xhr.setRequestHeader('Content-type','application/json');
 	xhr.setRequestHeader('Accept','application/json');
 	var timeout = setInterval(function() {
@@ -73,5 +77,7 @@ var win2 = Titanium.UI.createWindow({
     rightNavButton: trackRequestButton
 });
 
-
+tableViewTrack.addEventListener('click', function(e){
+	tableViewTrackValue.blur();
+});
 win2.add(tableViewTrack);

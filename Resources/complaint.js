@@ -5,9 +5,9 @@ var win1 = Titanium.UI.createWindow({
     title:'Report Problem',
     backgroundColor:'#fff'
 });
+var reviewWindow = null;
 
-
-var data = [{title: 'Water Supply'},
+var data = [{title: 'No Water Supply'},
 {title: 'Water Leakage',
 	touchEnabled: true},
 {title: 'Dumping Waste in Fresh Water',
@@ -58,6 +58,7 @@ var successCallback = function(e) {
 	Titanium.API.debug('succ');
 	Ti.API.debug(e.source.responseText);
  	var result = eval('(' + e.source.responseText + ')');
+ 	hideActivity({parent: reviewWindow});
  	Ti.API.debug(result);
 	if(result.response == 201) {
 		alert('Complaint Submitted. Complaint ID is ' + result.reference_id);
@@ -68,15 +69,18 @@ var successCallback = function(e) {
 };
 var failCallback = function(e) {
   Titanium.API.debug('fail');
+  alert('Request Timed Out...');
+  hideActivity({parent: reviewWindow});
 };
 
 
 var submitReport = function(e) {
 	Ti.API.debug('submitting');
+	showActivity({parent: reviewWindow, message: 'Registering Complaint...'})
 	var xhr = Ti.Network.createHTTPClient();
 	var url = 'http://' + MACHINE_ADDRESS + '/complaint/create.json?mobile='+mobileNumber+'&location='+location+'&type='+complaintNature;
 	Ti.API.info('URL: ' + url);
-	xhr.open("GET",url);
+	xhr.open("GET",url, false);
 	xhr.setRequestHeader('Content-type','application/json');
 	xhr.setRequestHeader('Accept','application/json');
 	var timeout = setInterval(function() {
@@ -156,7 +160,7 @@ var reviewComplaintData = function() {
     	
 	});
 	sendReportButton.addEventListener('click', submitReport);
-	var reviewWindow = Titanium.UI.createWindow({  
+	reviewWindow = Titanium.UI.createWindow({  
 	    title:'Review Complaint',
 	    backgroundColor:'#fff',
 	    rightNavButton: sendReportButton
