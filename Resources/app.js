@@ -12,6 +12,9 @@ var MACHINE_ADDRESS = '172.16.1.44:3000';
 var userName = '';
 var mobileNumber = '';
 var location = '';
+var db = Titanium.Database.open('mydb');
+
+db.execute('CREATE TABLE IF NOT EXISTS MyComplaints  (REFERENCEID TEXT)');
 
 if (Titanium.Platform.name != 'android')
 {
@@ -44,6 +47,6 @@ var tab3 = Titanium.UI.createTab({
 tabGroup.addTab(tab1);  
 tabGroup.addTab(tab2);  
 tabGroup.addTab(tab3)
-
+populateData(null);
 // open tab group
 tabGroup.open();

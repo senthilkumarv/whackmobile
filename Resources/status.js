@@ -43,13 +43,18 @@ var statusSuccessCallback = function(e) {
 	} 
 	alert('Invalid Reference Number');
 }
-var trackRequestStatus = function() {
+var trackRequestStatus = function(e) {
+	var parentWindow = win2;
+	if(e.parentWindow != undefined) {
+		parentWindow = e.parentWindow;
+		referenceId = e.referenceId;
+	}
 	if(referenceId == undefined || referenceId == '' || referenceId == null){
 		alert('Enter a Valid Reference ID');
 		return;
 	}
 	tableViewTrackValue.blur();
-	showActivity({parent: win2, message: 'Requesting Status...'});
+	showActivity({parent: parentWindow, message: 'Requesting Status...'});
 	var url = 'http://' + MACHINE_ADDRESS + '/complaint/status.json?reference_id=' + referenceId;
 	var xhr = Ti.Network.createHTTPClient();
 	xhr.open("GET",url, false);

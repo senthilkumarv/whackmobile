@@ -62,6 +62,8 @@ var successCallback = function(e) {
  	Ti.API.debug(result);
 	if(result.response == 201) {
 		alert('Complaint Submitted. Complaint ID is ' + result.reference_id);
+		db.execute('INSERT INTO MyComplaints (REFERENCEID) VALUES(?)', result.reference_id);
+		populateData();
 		return;
 	} 
 	alert('Request Failed. Retry');
