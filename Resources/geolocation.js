@@ -13,7 +13,6 @@ var getLocation = function() {
 		geoLocationResult.longitude = longitude;
 		geoLocationResult.latitude = latitude;
 
-		// try to get address
 		Titanium.Geolocation.reverseGeocoder(latitude,longitude, function(evt) {
 			var street = '';
 			var city = '';

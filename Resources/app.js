@@ -4,11 +4,10 @@ Ti.include('status.js')
 Ti.include('mycomplaints.js')
 Ti.include('geolocation.js')
 
-// this sets the background color of the master UIView (when there are no windows/tab groups on it)
 Titanium.UI.setBackgroundColor('#000');
 Ti.Geolocation.purpose = 'To Report Water Problems'
 Titanium.Geolocation.accuracy = Titanium.Geolocation.ACCURACY_BEST;
-var MACHINE_ADDRESS = '172.16.1.44:3000';
+var MACHINE_ADDRESS = '10.0.2.1:3000';
 var userName = '';
 var mobileNumber = '';
 var location = '';

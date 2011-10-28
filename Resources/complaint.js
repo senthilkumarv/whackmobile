@@ -44,28 +44,48 @@ var raiseComplaint = function(e) {
 			reportDumping();
 			break;
 	}
-	//while(geoLocationResult.status == undefined || geoLocationResult.status == null);
-	//while(geoLocationResult.astatus == undefined || geoLocationResult.astatus == null);
-	
+
 	Ti.API.debug("Res" + geoLocationResult.street + " " + geoLocationResult.status);
 	reviewComplaintData();
 };
 
 complaintTopics.addEventListener('click', raiseComplaint);
-
+var file = null;
 win1.add(complaintTopics);
+var sendPic = function(param) {
+	Ti.API.debug('Inside SendPic');
+	var data_to_send = { 
+		
+        "file": file.read(), 
+        "name": param 
+    };
+    
+    Ti.API.debug('data: ' + data_to_send);
+    var xhr = Titanium.Network.createHTTPClient();
+    xhr.setRequestHeader("enctype", "multipart/form-data");
+    xhr.setRequestHeader("Content-Type", "image/png");
+    xhr.open("POST",'http://' + MACHINE_ADDRESS + '/complaints/upload/'+param, false);
+    xhr.send(data_to_send); 
+    xhr.onload = function() {
+        textfield.value = this.responseText;
+        Ti.API.info(this.responseText); 
+    };
+};
 var successCallback = function(e) {
-	Titanium.API.debug('succ');
-	Ti.API.debug(e.source.responseText);
- 	var result = eval('(' + e.source.responseText + ')');
- 	hideActivity({parent: reviewWindow});
- 	Ti.API.debug(result);
-	if(result.response == 201) {
-		alert('Complaint Submitted. Complaint ID is ' + result.reference_id);
-		db.execute('INSERT INTO MyComplaints (REFERENCEID) VALUES(?)', result.reference_id);
-		populateData();
-		return;
-	} 
+	if(e.source.status == 200) {
+		Titanium.API.debug('succ');
+		Ti.API.debug(e.source.responseText);
+	 	var result = eval('(' + e.source.responseText + ')');
+	 	hideActivity({parent: reviewWindow});
+	 	Ti.API.debug(result);
+		if(result.response == 200) {
+			alert('Complaint Submitted. Complaint ID is ' + result.reference_id);
+			db.execute('INSERT INTO MyComplaints (REFERENCEID) VALUES(?)', result.reference_id);
+			populateData();
+			sendPic(result.reference_id);
+			return;
+		} 
+	}
 	alert('Request Failed. Retry');
 	
 };
@@ -80,23 +100,17 @@ var submitReport = function(e) {
 	Ti.API.debug('submitting');
 	showActivity({parent: reviewWindow, message: 'Registering Complaint...'})
 	var xhr = Ti.Network.createHTTPClient();
-	var url = 'http://' + MACHINE_ADDRESS + '/complaint/create.json?mobile='+mobileNumber+'&location='+location+'&type='+complaintNature;
-	Ti.API.info('URL: ' + url);
-	xhr.open("GET",url, false);
+	var url = 'http://' + MACHINE_ADDRESS + '/complaints.json';
+	var data = '{"complaint": {"mobile":"' + mobileNumber +'","location":"' + location +'","complaint_type":"' + complaintNature +'"}}';
+	
+	Ti.API.info('URL: ' + data);
+	xhr.open("POST",url, false);
 	xhr.setRequestHeader('Content-type','application/json');
 	xhr.setRequestHeader('Accept','application/json');
-	var timeout = setInterval(function() {
-		Ti.API.debug(xhr.readyState);
-        if (xhr.readyState == 4) {
-            clearInterval(timeout);
-            return;
-        }
-        failCallback();
-    }, 20000);
 	xhr.onload = function(e) {
 		successCallback(e);
 	};
-	xhr.send({});
+	xhr.send(data);
 };
 var reviewDataTable;
 var changePhotoRow = function(e, cam) {
@@ -117,8 +131,9 @@ var changePhotoRow = function(e, cam) {
 	e.source.add(labl1);
 	e.source.add(img1);
 	e.source.title = '';
-	var f = Titanium.Filesystem.getFile(Titanium.Filesystem.applicationDataDirectory,'camera_photo.png');
-	f.write(cam.media);
+	
+	file = Titanium.Filesystem.createTempFile();
+	file.write(cam.media);
 	reviewDataTable.removeEventListener('click', takePhoto);
 	reviewDataTable.touchEnable = false;
 };

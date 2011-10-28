@@ -22,7 +22,7 @@ var populateData = function(e) {
 	var rows = db.execute('SELECT * FROM MyComplaints');
 	i=0
 	while(rows.isValidRow()){
-		mycomplaints[i] = {title: rows.field(0)};
+		mycomplaints[i] = {title: rows.field(0).replace('.0', '')};
 		rows.next();
 		i++;
 	}
